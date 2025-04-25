@@ -3,8 +3,8 @@ using Test
 using Random
 using BenchmarkTools
 
-using CUDA # or AMDGPU
-atype = CuArray # or ROCArray
+using AMDGPU # or CUDA
+atype = ROCArray # or CuArray
 
 # Simple kernel for matrix multiplication
 @kernel function matmul_kernel!(output, @Const(a), @Const(b))

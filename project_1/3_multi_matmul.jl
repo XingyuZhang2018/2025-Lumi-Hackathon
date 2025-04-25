@@ -1,11 +1,10 @@
-using CUDA
 using LinearAlgebra
 using BenchmarkTools
 using KernelAbstractions
 using Random
 
-using CUDA # or AMDGPU
-atype = CuArray # or ROCArray
+using AMDGPU # or CUDA
+atype = ROCArray # or CuArray
 
 # Binary search device function
 function binary_search(prefix_sum, val)
@@ -105,8 +104,8 @@ Acs = Array(cs);
 
 # Benchmarking
 println("kernel_matrix_product (GPU):")
-@btime CUDA.@sync kernel_matrix_product($a, $b, $c, $matrix_sizes);
+@btime AMDGPU.@sync kernel_matrix_product($a, $b, $c, $matrix_sizes);
 println("serial_matrix_product (GPU):")
-@btime CUDA.@sync serial_matrix_product($a, $b, $cs, $matrix_sizes);
+@btime AMDGPU.@sync serial_matrix_product($a, $b, $cs, $matrix_sizes);
 println("serial_matrix_product (CPU):")
-@btime CUDA.@sync serial_matrix_product($Aa, $Ab, $Acs, $matrix_sizes);
+@btime AMDGPU.@sync serial_matrix_product($Aa, $Ab, $Acs, $matrix_sizes);

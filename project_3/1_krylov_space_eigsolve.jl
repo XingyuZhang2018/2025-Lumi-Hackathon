@@ -4,8 +4,8 @@ using BenchmarkTools
 using Test
 using Random
 
-using CUDA # or AMDGPU
-atype = CuArray # or ROCArray
+using AMDGPU # or CUDA
+atype = ROCArray # or CuArray
 
 @testset "eigsolve $atype" for atype in [Array, atype]
     Random.seed!(100)
@@ -14,9 +14,9 @@ atype = CuArray # or ROCArray
     v0 = atype(rand(ComplexF64, N))
     linearmap(v) = A * v
     println("dot product for $atype:")
-    @btime CUDA.@sync dot($v0, $v0)
+    @btime AMDGPU.@sync dot($v0, $v0)
     println("linearmap for $atype:")
-    @btime CUDA.@sync $linearmap($v0)
+    @btime AMDGPU.@sync $linearmap($v0)
     println("eigsolve for $atype:")
-    @btime CUDA.@sync λs, vs = eigsolve(v -> $linearmap(v), $v0, 1, :LM)
+    @btime AMDGPU.@sync λs, vs = eigsolve(v -> $linearmap(v), $v0, 1, :LM)
 end

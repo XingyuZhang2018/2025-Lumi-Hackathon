@@ -3,8 +3,8 @@ using StaticArrays
 using Test
 using Random
 
-using CUDA # or AMDGPU
-atype = CuArray # or ROCArray
+using AMDGPU # or CUDA
+atype = ROCArray # or CuArray
 
 const TILE_DIM = 32
 

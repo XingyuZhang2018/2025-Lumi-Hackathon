@@ -1,11 +1,10 @@
-using CUDA
 using LinearAlgebra
 using BenchmarkTools
 using KernelAbstractions
 using Random
 
-using CUDA # or AMDGPU
-atype = CuArray # or ROCArray
+using AMDGPU # or CUDA
+atype = ROCArray # or CuArray
 
 BLOCK_SIZE = 16
 # Binary search device function
@@ -105,7 +104,7 @@ function kernel_matrix_product_shared(A, B, C, matrix_sizes)
     atype_matrix_sizes = atype(vcat([[m[1] m[2] m[3]] for m in matrix_sizes]...))
 
     backend = KernelAbstractions.get_backend(A)
-    grid_size = CUDA.@allowscalar prefix_sumblock[end]
+    grid_size = AMDGPU.@allowscalar prefix_sumblock[end]
     kernel! = multi_matmul_kernel_shared!(backend)
     kernel!(A, B, C, atype_matrix_sizes, prefix_sumA, prefix_sumB, prefix_sumC, prefix_sumblock; 
             ndrange=grid_size*prod(block_size), workgroupsize=prod(block_size))
@@ -150,8 +149,8 @@ Acs = Array(cs);
 
 # Benchmarking
 println("kernel_matrix_product_shared (GPU):")
-@btime CUDA.@sync kernel_matrix_product_shared($a, $b, $c, $matrix_sizes);
+@btime AMDGPU.@sync kernel_matrix_product_shared($a, $b, $c, $matrix_sizes);
 println("serial_matrix_product (GPU):")
-@btime CUDA.@sync serial_matrix_product($a, $b, $cs, $matrix_sizes);
+@btime AMDGPU.@sync serial_matrix_product($a, $b, $cs, $matrix_sizes);
 println("serial_matrix_product (CPU):")
-@btime CUDA.@sync serial_matrix_product($Aa, $Ab, $Acs, $matrix_sizes);
+@btime AMDGPU.@sync serial_matrix_product($Aa, $Ab, $Acs, $matrix_sizes);
