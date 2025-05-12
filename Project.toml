@@ -2,6 +2,7 @@
 AMDGPU = "21141c5a-9bdb-4563-92ae-f87d6854732e"
 BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
 CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
+Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 KernelAbstractions = "63c18a36-062a-441e-b654-da1e3ab1ce7c"
 KrylovKit = "0b1a1467-8014-51b9-945f-bf0ae24f4b77"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
