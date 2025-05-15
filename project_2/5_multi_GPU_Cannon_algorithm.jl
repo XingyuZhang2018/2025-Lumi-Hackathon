@@ -16,7 +16,7 @@ function gpu_cannon_multiply(A_global, B_global, p::Int)
             @show device_id
             device_id!(device_id)
             C_block_temp = atype(zeros(block_size,block_size))
-            cache = GPUArrays.AllocCache()
+            # cache = GPUArrays.AllocCache()
             for k in 1:p
                 # GPUArrays.@cached cache begin
                     # Calculate block positions
@@ -57,7 +57,7 @@ function gpu_cannon(A, B, p)
     
     # Execute GPU version of Cannon's algorithm
     C_gpu = gpu_cannon_multiply(A_gpu, B_gpu, p)
-    
+    GC.gc(true)
     # Transfer result back to CPU
     return Array(C_gpu)
 end
@@ -71,8 +71,8 @@ A = rand(n,n)
 B = rand(n,n)
 
 # Run GPU algorithm
+# GC.gc(true)
 C_gpu = gpu_cannon(A, B, p)
-
 # Standard result
 C_standard = A * B
 

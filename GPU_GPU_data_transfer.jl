@@ -16,23 +16,33 @@ B = atype(A)
 C = B*B
 @show device(C).device_id 
 
-function transfer_data_GPU_CPU_GPU(A)
+function transfer_data_GPU_CPU_GPU(A; id=2)
     A_array = Array(A)
-    device_id!(2)
+    device_id!(id)
     B = atype(A_array)
     return B
 end
 
-function transfer_GPU_GPU(A)
-    device_id!(2)
+function transfer_GPU_GPU(A; id=2)
+    device_id!(id)
     B = atype(A)
     return B
 end
 
+function multi_transfer(A, ids)
+    for id in ids
+        begin
+            B = transfer_GPU_GPU(A; id=id)
+        end
+    end
+end
+
 t = []
-for N in 2 .^ (5:13)
+for N in 2 .^ (2:2)
     device_id!(1)
     A = atype(rand(ComplexF64, N,N))
+    # @btime AMDGPU.@sync transfer_GPU_GPU(A; id=2)
+    # @btime AMDGPU.@sync multi_transfer(A, [2])
     t1 = @belapsed AMDGPU.@sync B = transfer_data_GPU_CPU_GPU($A)
     t2 = @belapsed AMDGPU.@sync B = transfer_GPU_GPU($A)
     push!(t,[N,t1,t2])

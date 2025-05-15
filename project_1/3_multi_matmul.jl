@@ -2,7 +2,7 @@ using LinearAlgebra
 using BenchmarkTools
 using KernelAbstractions
 using Random
-
+using Test
 using AMDGPU # or CUDA
 atype = ROCArray # or CuArray
 
@@ -68,7 +68,7 @@ end
 
 # Test cases
 Random.seed!(1234)
-matrix_sizes = Tuple([Tuple(rand(50:100,3)) for _ in 1:100])
+matrix_sizes = Tuple([Tuple(rand(500:600,3)) for _ in 1:20])
 Adim = sum(map(m->prod(m[[1,2]]), matrix_sizes))
 Bdim = sum(map(m->prod(m[[2,3]]), matrix_sizes))
 Cdim = sum(map(m->prod(m[[1,3]]), matrix_sizes))
@@ -83,11 +83,11 @@ function serial_matrix_product(A, B, C, matrix_sizes)
     prefix_sumA = [0; cumsum([prod(d[[1,2]]) for d in matrix_sizes])]
     prefix_sumB = [0; cumsum([prod(d[[2,3]]) for d in matrix_sizes])]
     prefix_sumC = [0; cumsum([prod(d[[1,3]]) for d in matrix_sizes])]
-    A_matrix = [reshape(view(A, prefix_sumA[i]+1:prefix_sumA[i+1]), matrix_sizes[i][[1,2]]) for i in 1:length(matrix_sizes)]
-    B_matrix = [reshape(view(B, prefix_sumB[i]+1:prefix_sumB[i+1]), matrix_sizes[i][[2,3]]) for i in 1:length(matrix_sizes)]
 
     for i in 1:length(matrix_sizes)
-        mul!(reshape(view(C, prefix_sumC[i]+1:prefix_sumC[i+1]), matrix_sizes[i][[1,3]]), A_matrix[i], B_matrix[i])
+        mul!(reshape(view(C, prefix_sumC[i]+1:prefix_sumC[i+1]), matrix_sizes[i][[1,3]]),            
+             reshape(view(A, prefix_sumA[i]+1:prefix_sumA[i+1]), matrix_sizes[i][[1,2]]), 
+             reshape(view(B, prefix_sumB[i]+1:prefix_sumB[i+1]), matrix_sizes[i][[2,3]]))
     end
     return C
 end
